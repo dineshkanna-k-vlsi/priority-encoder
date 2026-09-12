@@ -1,0 +1,40 @@
+`timescale 1ns / 1ps
+
+module tb_priority_encoder_4x2;
+
+    // Testbench signals
+    reg  [3:0] in;
+    wire [1:0] out;
+    wire       valid;
+
+    priority_encoder_4x2 uut (
+        .in(in),
+        .out(out),
+        .valid(valid)
+    );
+
+
+    initial begin
+    
+        $display("Time | Input | Output | Valid");
+        $display("------------------------------");
+        $monitor("%4t |  %4b  |   %2b   |   %b", $time, in, out, valid);
+
+        
+        in = 4'b0000; #10; 
+        
+       
+        in = 4'b0001; #10; 
+        in = 4'b0010; #10; 
+        in = 4'b0100; #10; 
+        in = 4'b1000; #10; 
+        
+        in = 4'b0011; #10; // Bits 1 & 0 active -> Should output 01 (Bit 1 wins)
+        in = 4'b0110; #10; // Bits 2 & 1 active -> Should output 10 (Bit 2 wins)
+        in = 4'b1010; #10; // Bits 3 & 1 active -> Should output 11 (Bit 3 wins)
+        in = 4'b1111; #10; // All bits active   -> Should output 11 (Bit 3 wins)
+
+        $finish;
+    end
+
+endmodule
